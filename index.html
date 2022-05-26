@@ -15,17 +15,36 @@
             background-color:navy;
         }
 
-        .header {
-            width: 100%;
-            height: 90px;
+        .dark_text {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 19px;
+            color: darkblue;
+            text-shadow: 0px 0.5px black;
+        }
 
-            background-color: royalblue;
+        .light_text {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 19px;
+            color: dodgerblue;
+            text-shadow: 0px 0.5px aqua;
+        }
+
+        #header {
+            width: 100%;
+            height: 84px;
+
+            background-color: dodgerblue;
 
             border-bottom-style: ridge;
             border-color: darkblue;
             border-width: 4px;
 
             box-shadow: 0px 5px 8px rgb(0, 0, 80);
+
+            color: darkblue;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 60px;
+            text-shadow: 0px 2px black;
         }
 
         #title {
@@ -37,20 +56,16 @@
             top: 50%;
             transform: translateY(-50%);
 
-            color: darkblue;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 60px;
-            text-shadow: 0px 2px black;
-
             white-space: nowrap;
         }
 
-        .body {
+        #body {
             width: 800px;
-            margin: 20px auto;
+            margin: 10px auto;
             border-radius: 15px;
+            padding: 16px;
 
-            background-color: royalblue;
+            background-color: dodgerblue;
 
             border-style: ridge;
             border-color: darkblue;
@@ -58,23 +73,61 @@
         }
 
         #instructions {
-            color: darkblue;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 18px;
-            text-shadow: 0px 0.5px black;
-            width: 760px;
-            margin: 20px auto;
+            width: 800px;
+            margin: 0px auto 16px;
             text-align: center;
+        }
+
+        #inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 10px;
+
+            border-style: ridge;
+            border-color: darkblue;
+            border-width: 4px;
+
+            padding: 10px;
+            border-radius: 8px;
+
+            background-color:navy;
+        }
+
+        #input_value {
+            display: flex;
+        }
+
+        #input_value_text {
+            display: inline-block;
+        }
+
+        #input_value_field {
+            flex-grow: 1;
+            margin: 0px 6px;
+            padding: 0px 2px;
+            background-color:lightskyblue;
+            border-radius: 3px;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
+    <div id="header">
         <div id="title">Binary Decimal Converter</div>
     </div>
-    <div class="body">
-        <p id="instructions">Welcome to the Binary Decimal Converter!<br><br>Please enter the value that you'd like to have converted. Select the input and output types that you'd like. Then click the Calculate button to receive the result.</p>
+    <div id="body">
+        <p id="instructions" class="dark_text">Welcome to the Binary Decimal Converter!<br><br>Please enter the value that you'd like to have converted. Select the input and output types that you'd like. Then click the Calculate button to receive the result.</p>
+        <div id="inputs">
+            <div id="input_type" class="light_text">
+                <div id="input_type_text">Input Type:</div>
+            </div>
+            <div id="output_type" class="light_text">Output Type:</div>
+            <div id="input_value" class="light_text">
+                <div id="input_value_text">Input:</div>
+                <input type="text" id="input_value_field" class="dark_text"></input>
+            </div>
+            <div id="output_value" class="light_text">Output:</div>
+        </div>
     </div>
 </body>
 
