@@ -62,7 +62,6 @@
         #body {
             width: 800px;
             margin: 10px auto;
-            border-radius: 15px;
             padding: 16px;
 
             background-color: dodgerblue;
@@ -70,6 +69,7 @@
             border-style: ridge;
             border-color: darkblue;
             border-width: 4px;
+            border-radius: 15px;
         }
 
         #instructions {
@@ -79,34 +79,83 @@
         }
 
         #inputs {
+            padding: 10px;
+
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-gap: 10px;
+            grid-gap: 12px;
+
+            background-color:navy;
 
             border-style: ridge;
             border-color: darkblue;
             border-width: 4px;
-
-            padding: 10px;
             border-radius: 8px;
+        }
 
-            background-color:navy;
+        #input_type {
+            display:flex;
+        }
+
+        #input_type_select {
+            flex-grow: 1;
+            margin-left: 6px;
+            padding-left: 4px;
+
+            background-color:lightskyblue;
+
+            font-size: 16px;
+
+            border-radius: 3px;
+        }
+
+        #output_type {
+            display:flex;
+        }
+
+        #output_type_select {
+            flex-grow: 1;
+            margin-left: 6px;
+            padding-left: 4px;
+
+            background-color:lightskyblue;
+
+            font-size: 16px;
+
+            border-radius: 3px;
         }
 
         #input_value {
             display: flex;
         }
 
-        #input_value_text {
-            display: inline-block;
-        }
-
         #input_value_field {
             flex-grow: 1;
-            margin: 0px 6px;
+            margin-left: 6px;
             padding: 0px 2px;
             background-color:lightskyblue;
             border-radius: 3px;
+        }
+
+        #calculate_button {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            background-color:skyblue;
+            border-radius: 3px;
+            color:mediumblue;
+            padding: 1px;
+            margin: 1px;
+
+            border-style: ridge;
+            border-color: darkblue;
+            border-width: 4px;
+        }
+
+        #calculate_button:hover {
+            background-color: dodgerblue;
+            color: darkblue;
+            padding: 2px;
+            margin: 0px;;
         }
     </style>
 </head>
@@ -116,17 +165,32 @@
         <div id="title">Binary Decimal Converter</div>
     </div>
     <div id="body">
-        <p id="instructions" class="dark_text">Welcome to the Binary Decimal Converter!<br><br>Please enter the value that you'd like to have converted. Select the input and output types that you'd like. Then click the Calculate button to receive the result.</p>
+        <p id="instructions" class="dark_text">Welcome to the Binary Decimal Converter!<br><br>Please enter the value that you'd like to have converted. Select the input and output types that you'd like. Then click the Calculate button to receive the output.</p>
         <div id="inputs">
             <div id="input_type" class="light_text">
                 <div id="input_type_text">Input Type:</div>
+                <select id="input_type_select" class="dark_text">
+                    <option value="none" selected hidden>Not Selected</option>
+                    <option value="binary">Binary</option>
+                    <option value="decimal">Decimal</option>
+                    <option value="hex">Hex</option>
+                </select>
             </div>
-            <div id="output_type" class="light_text">Output Type:</div>
+            <div id="output_type" class="light_text">
+                <div id="output_type_text">Output Type:</div>
+                <select id="output_type_select" class="dark_text">
+                    <option value="none" selected hidden>Not Selected</option>
+                    <option value="binary">Binary</option>
+                    <option value="decimal">Decimal</option>
+                    <option value="hex">Hex</option>
+                </select>
+            </div>
             <div id="input_value" class="light_text">
                 <div id="input_value_text">Input:</div>
                 <input type="text" id="input_value_field" class="dark_text"></input>
             </div>
             <div id="output_value" class="light_text">Output:</div>
+            <button id="calculate_button" class="dark_text">Calculate</button>
         </div>
     </div>
 </body>
