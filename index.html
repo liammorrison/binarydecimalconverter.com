@@ -15,14 +15,14 @@
             background-color:navy;
         }
 
-        .dark_text {
+        .darkText {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 19px;
             color: darkblue;
             text-shadow: 0px 0.5px black;
         }
 
-        .light_text {
+        .lightText {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 19px;
             color: dodgerblue;
@@ -93,11 +93,11 @@
             border-radius: 8px;
         }
 
-        #input_type {
+        #inputType {
             display:flex;
         }
 
-        #input_type_select {
+        #inputTypeSelect {
             flex-grow: 1;
             margin-left: 6px;
             padding-left: 4px;
@@ -109,11 +109,11 @@
             border-radius: 3px;
         }
 
-        #output_type {
+        #outputType {
             display:flex;
         }
 
-        #output_type_select {
+        #outputTypeSelect {
             flex-grow: 1;
             margin-left: 6px;
             padding-left: 4px;
@@ -125,11 +125,11 @@
             border-radius: 3px;
         }
 
-        #input_value {
+        #inputValue {
             display: flex;
         }
 
-        #input_value_field {
+        #inputValueField {
             flex-grow: 1;
             margin-left: 6px;
             padding: 0px 2px;
@@ -137,7 +137,7 @@
             border-radius: 3px;
         }
 
-        #calculate_button {
+        #calculateButton {
             grid-column-start: 1;
             grid-column-end: 3;
             background-color:skyblue;
@@ -151,11 +151,21 @@
             border-width: 4px;
         }
 
-        #calculate_button:hover {
+        #calculateButton:hover {
             background-color: dodgerblue;
             color: darkblue;
             padding: 2px;
             margin: 0px;;
+        }
+
+        #output {
+            margin-top: 16px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        sub {
+            font-size: 14px;
         }
     </style>
 </head>
@@ -165,34 +175,148 @@
         <div id="title">Binary Decimal Converter</div>
     </div>
     <div id="body">
-        <p id="instructions" class="dark_text">Welcome to the Binary Decimal Converter!<br><br>Please enter the value that you'd like to have converted. Select the input and output types that you'd like. Then click the Calculate button to receive the output.</p>
+        <p id="instructions" class="darkText">Welcome to the Binary Decimal Converter!<br><br>Please enter the value that you'd like to have converted. Select the input and output types that you'd like. Then click the Calculate button to receive the output.</p>
         <div id="inputs">
-            <div id="input_type" class="light_text">
-                <div id="input_type_text">Input Type:</div>
-                <select id="input_type_select" class="dark_text">
+            <div id="inputType" class="lightText">
+                <div id="inputTypeText">Input Type:</div>
+                <select id="inputTypeSelect" class="darkText">
                     <option value="none" selected hidden>Not Selected</option>
                     <option value="binary">Binary</option>
                     <option value="decimal">Decimal</option>
                     <option value="hex">Hex</option>
                 </select>
             </div>
-            <div id="output_type" class="light_text">
-                <div id="output_type_text">Output Type:</div>
-                <select id="output_type_select" class="dark_text">
+            <div id="outputType" class="lightText">
+                <div id="outputTypeText">Output Type:</div>
+                <select id="outputTypeSelect" class="darkText">
                     <option value="none" selected hidden>Not Selected</option>
                     <option value="binary">Binary</option>
                     <option value="decimal">Decimal</option>
                     <option value="hex">Hex</option>
                 </select>
             </div>
-            <div id="input_value" class="light_text">
-                <div id="input_value_text">Input:</div>
-                <input type="text" id="input_value_field" class="dark_text"></input>
+            <div id="inputValue" class="lightText">
+                <div id="inputValueText">Input:</div>
+                <input type="text" id="inputValueField" class="darkText"></input>
             </div>
-            <div id="output_value" class="light_text">Output:</div>
-            <button id="calculate_button" class="dark_text">Calculate</button>
+            <div id="outputValue" class="lightText">Output:</div>
+            <button id="calculateButton" class="darkText">Calculate</button>
         </div>
+        <div id="output" class="darkText"></div>
     </div>
+
+    <script>
+        var calculateButton = document.getElementById("calculateButton");
+	    calculateButton.addEventListener("click", displayOutput);
+
+        var input = 1;
+        var inputType = "Not Selected";
+        var outputType = "Not Selected";
+
+        function calculateOutput() {
+            let powers = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512];
+
+            if (inputType == "decimal" && outputType == "binary") {
+                let outputArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                let remainder = input;
+
+                for (let i = powers.length - 1; i >= 0; i--) {
+                    if (powers[i] <= remainder) {
+                        outputArray[i] = 1;
+                        remainder -= powers[i];
+                    }
+                }
+
+                let output = createBinaryOutput(outputArray);
+                return output;
+            } else if (inputType == "binary" && outputType == "decimal") {
+                let decimalTotal = 0;
+                let binaryArray = Array.from(String(input), Number);
+
+                let j = 0;
+                for (let i = binaryArray.length - 1; i >= 0; i--) {
+                    if (binaryArray[i] == 1) {
+                        decimalTotal += powers[j];
+                    }
+
+                    j++;
+                }
+
+                return decimalTotal;
+            }
+        }
+
+        function createBinaryOutput(outputArray) {
+            let outputString = "";
+            for (let i = outputArray.length - 1; i >= 0; i--) {
+                outputString += outputArray[i];
+            }
+            return outputString;
+        }
+
+        function getSubscript(baseType) {
+            let subscript;
+
+            switch(baseType) {
+                case "binary":
+                    subscript = "2";
+                    break;
+                case "decimal":
+                    subscript = "10";
+                    break;
+                case "hex":
+                subscript = "16";
+                    break;
+            }
+
+            return subscript;
+        }
+
+        function ensureAllInputsSelected() {
+            if (input == "") {
+                document.getElementById("output").innerHTML = "Please enter an input.";
+                return false;
+            }
+
+            if (isNaN(input) || isNaN(parseFloat(input))) {
+                document.getElementById("output").innerHTML = "Please only enter numbers for the input.";
+                return false;
+            }
+
+            if (inputType == "none") {
+                document.getElementById("output").innerHTML = "Please select an input type.";
+                return false;
+            }
+
+            if (outputType == "none") {
+                document.getElementById("output").innerHTML = "Please select an output type.";
+                return false;
+            }
+
+            if (inputType == outputType) {
+                document.getElementById("output").innerHTML = "Please make sure the input type and output type are different from each other.";
+                return false;
+            }
+
+            return true;
+        }
+
+	    function displayOutput() {
+            input = document.getElementById("inputValueField").value;
+            inputType = document.getElementById("inputTypeSelect").value;
+            outputType = document.getElementById("outputTypeSelect").value;
+
+            let allInputsSelected = ensureAllInputsSelected();
+            if (allInputsSelected == true) {
+                let output = calculateOutput();
+                let inputSubscript = getSubscript(inputType);
+                let outputSubscript = getSubscript(outputType);
+
+                //document.getElementById("outputValue").innerHTML = "Output:&emsp;" + output;
+                document.getElementById("output").innerHTML = input + inputSubscript.sub() + " = " + output + outputSubscript.sub();
+            }
+	    }
+    </script>
 </body>
 
 </html>
