@@ -12,36 +12,38 @@
             margin-right: 0%;
             margin-top: 0%;
             
-            background-color:navy;
+            background-color: aliceblue;
+        }
+
+        sub {
+            font-size: 14px;
         }
 
         .darkText {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 19px;
-            color: darkblue;
+            color: midnightblue;
             text-shadow: 0px 0.5px black;
         }
 
         .lightText {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 19px;
-            color: dodgerblue;
-            text-shadow: 0px 0.5px aqua;
+            font-size: 20px;
+            color: lightskyblue;
+            text-shadow: 0px 0.5px white;
         }
 
         #header {
             width: 100%;
             height: 84px;
 
-            background-color: dodgerblue;
+            background-color: lightskyblue;
 
             border-bottom-style: ridge;
-            border-color: darkblue;
+            border-color: midnightblue;
             border-width: 4px;
 
-            box-shadow: 0px 5px 8px rgb(0, 0, 80);
-
-            color: darkblue;
+            color: darkslateblue;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 60px;
             text-shadow: 0px 2px black;
@@ -64,12 +66,12 @@
             margin: 10px auto;
             padding: 16px;
 
-            background-color: dodgerblue;
+            background-color: lightskyblue;
 
             border-style: ridge;
-            border-color: darkblue;
+            border-color: midnightblue;
             border-width: 4px;
-            border-radius: 15px;
+            border-radius: 12px;
         }
 
         #instructions {
@@ -79,16 +81,16 @@
         }
 
         #inputs {
-            padding: 10px;
+            padding: 12px;
 
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-gap: 12px;
+            grid-gap: 13px;
 
-            background-color:navy;
+            background-color: darkslateblue;
 
             border-style: ridge;
-            border-color: darkblue;
+            border-color: midnightblue;
             border-width: 4px;
             border-radius: 8px;
         }
@@ -106,6 +108,9 @@
 
             font-size: 16px;
 
+            border-style: ridge;
+            border-color: midnightblue;
+            border-width: 4px;
             border-radius: 3px;
         }
 
@@ -122,6 +127,9 @@
 
             font-size: 16px;
 
+            border-style: ridge;
+            border-color: midnightblue;
+            border-width: 4px;
             border-radius: 3px;
         }
 
@@ -132,40 +140,72 @@
         #inputValueField {
             flex-grow: 1;
             margin-left: 6px;
-            padding: 0px 2px;
+            padding: 0px 4px;
             background-color:lightskyblue;
+
+            border-style: ridge;
+            border-color: midnightblue;
+            border-width: 4px;
             border-radius: 3px;
+        }
+
+        #outputValue {
+            display: flex;
+        }
+
+        #outputValueField {
+            flex-grow: 1;
+            margin-left: 10px;
         }
 
         #calculateButton {
             grid-column-start: 1;
             grid-column-end: 3;
-            background-color:skyblue;
-            border-radius: 3px;
-            color:mediumblue;
             padding: 1px;
             margin: 1px;
+            background-color:lightskyblue;
 
             border-style: ridge;
-            border-color: darkblue;
+            border-color: midnightblue;
             border-width: 4px;
+            border-radius: 3px;
         }
 
         #calculateButton:hover {
-            background-color: dodgerblue;
-            color: darkblue;
             padding: 2px;
-            margin: 0px;;
+            margin: 0px;
+
+            background-color: dodgerblue;
+
+            font-size: 20px;
         }
 
         #output {
             margin-top: 16px;
+            padding: 8px 0px;
+
+            background-color: steelblue;
+
             font-size: 22px;
             text-align: center;
+
+            border-style: ridge;
+            border-color: midnightblue;
+            border-width: 4px;
+            border-radius: 8px;
+
+            visibility: hidden;
         }
 
-        sub {
-            font-size: 14px;
+        #footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+
+            padding: 10px;
+
+            font-size: 15px;
         }
     </style>
 </head>
@@ -183,6 +223,7 @@
                     <option value="none" selected hidden>Not Selected</option>
                     <option value="binaryUnsigned">Binary (Unsigned)</option>
                     <option value="binarySigned">Binary (Signed)</option>
+                    <option value="binary2sComp">Binary (2's Complement)</option>
                     <option value="decimal">Decimal</option>
                     <option value="hex">Hex</option>
                 </select>
@@ -193,6 +234,7 @@
                     <option value="none" selected hidden>Not Selected</option>
                     <option value="binaryUnsigned">Binary (Unsigned)</option>
                     <option value="binarySigned">Binary (Signed)</option>
+                    <option value="binary2sComp">Binary (2's Complement)</option>
                     <option value="decimal">Decimal</option>
                     <option value="hex">Hex</option>
                 </select>
@@ -201,23 +243,38 @@
                 <div id="inputValueText">Input:</div>
                 <input type="text" id="inputValueField" class="darkText"></input>
             </div>
-            <div id="outputValue" class="lightText">Output:</div>
+            <div id="outputValue" class="lightText">
+                <div id="outputValueText">Output:</div>
+                <div id="outputValueField" class="lightText"></div>
+            </div>
             <button id="calculateButton" class="darkText">Calculate</button>
         </div>
-        <div id="output" class="darkText"></div>
+        <div id="output" class="lightText"></div>
     </div>
+
+    <footer id="footer" class="darkText">Liam Morrison, <script >document.write(new Date().getFullYear());</script></footer>
 
     <script>
         // Initiates the conversions if the calculate button is pressed.
-        var calculateButton = document.getElementById("calculateButton");
+        let calculateButton = document.getElementById("calculateButton");
 	    calculateButton.addEventListener("click", displayOutput);
 
-        var input = 1;
-        var inputType = "Not Selected";
-        var outputType = "Not Selected";
+        // Initiates the conversions if the enter key is pressed in the input field.
+        let inputValueText = document.getElementById("inputValueField");
+	    inputValueText.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13) {
+                displayOutput();
+            }
+        });
 
+        let input = 1;
+        let inputType = "Not Selected";
+        let outputType = "Not Selected";
+
+        // Creates an array filled with many powers of 2 for binary base conversions.
         let powers = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152];
 
+        // Chooses the appropriate conversion to run based on the input and output types.
         function calculateOutput() {
             if (inputType == "binaryUnsigned" && outputType == "decimal") {
                 let output = convertBinaryUnsignedToDecimal();
@@ -225,19 +282,27 @@
             } else if (inputType == "binarySigned" && outputType == "decimal") {
                 let output = convertBinarySignedToDecimal();
                 return output;
+            } else if (inputType == "binary2sComp" && outputType == "decimal") {
+                let output = convertBinary2sCompToDecimal();
+                return output;
             } else if (inputType == "decimal" && outputType == "binaryUnsigned") {
                 let output = convertDecimalToBinaryUnsigned();
                 return output;
             } else if (inputType == "decimal" && outputType == "binarySigned") {
                 let output = convertDecimalToBinarySigned();
                 return output;
+            } else if (inputType == "decimal" && outputType == "binary2sComp") {
+                let output = convertDecimalToBinary2sComp();
+                return output;
             }
         }
 
         function convertBinaryUnsignedToDecimal() {
             let decimalTotal = 0;
+            // Converts the input into an array with each digit as its own item.
             let binaryArray = Array.from(String(input), Number);
 
+            // Adds the decimal value for each filled binary digit to the decimalTotal.
             let j = 0;
             for (let i = binaryArray.length - 1; i >= 0; i--) {
                 if (binaryArray[i] == 1) {
@@ -247,6 +312,7 @@
                 j++;
             }
 
+            // Adds the negative sign back to the output if the input was negative.
             if (input < 0) {
                 return -decimalTotal;
             } else {
@@ -256,8 +322,10 @@
 
         function convertBinarySignedToDecimal() {
             let decimalTotal = 0;
+            // Converts the input into an array with each digit as its own item.
             let binaryArray = Array.from(String(input), Number);
 
+            // Adds the decimal value for each filled binary digit (except the first digit) to the decimalTotal.
             let j = 0;
             for (let i = binaryArray.length - 1; i >= 1; i--) {
                 if (binaryArray[i] == 1) {
@@ -267,6 +335,7 @@
                 j++;
             }
 
+            // Adds a negative sign to the output if the first digit is 1.
             if (binaryArray[0] == 1) {
                 return -decimalTotal;
             } else {
@@ -274,10 +343,40 @@
             }
         }
 
-        function convertDecimalToBinaryUnsigned() {
-            let outputArray = new Array(powers.length);
-            let remainder;
+        function convertBinary2sCompToDecimal() {
+            let decimalTotal = 0;
+            // Converts the input into an array with each digit as its own item.
+            let binaryArray = Array.from(String(input), Number);
 
+            if (binaryArray[0] == 0) {
+                // If the input is positive or 0, then the unsigned binary is returned.
+                decimalTotal = convertBinaryUnsignedToDecimal();
+            } else {
+                // If the input is negative, then:
+                // 1) The 0 bits have their corresponding decimal values added to decimalTotal.
+                let j = 0;
+                for (let i = binaryArray.length - 1; i >= 0; i--) {
+                    if (binaryArray[i] == 0) {
+                        decimalTotal += powers[j];
+                    }
+
+                    j++;
+                }
+                // 2) The decimalTotal is incremented by 1.
+                decimalTotal++;
+                // 3) The decimalTotal is made negative.
+                decimalTotal = -decimalTotal;
+            }
+
+            return decimalTotal;
+        }
+
+        function convertDecimalToBinaryUnsigned() {
+            // Creates an array with the size of all of the powers of 2 in the powers array.
+            let outputArray = new Array(powers.length);
+            
+            // Sets remainder to the absolute value of the input so that the for-loop below knows which binary digits can be filled.
+            let remainder;
             let isNegative = false;
             if (input < 0) {
                 isNegative = true;
@@ -286,6 +385,8 @@
                 remainder = input;
             }
 
+            // Loops through the powers of 2 by finding the highest power of 2 that it can add, filling the binary digit for those that can be added,
+            // and subtracting that power of 2 from the remainder so that there is a record of how much still needs to be accounted for.
             for (let i = powers.length - 1; i >= 0; i--) {
                 if (powers[i] <= remainder) {
                     outputArray[i] = 1;
@@ -295,15 +396,18 @@
                 }
             }
 
-            let output = createBinaryOutput(outputArray, false);
+            let output = createBinaryOutputRightToLeft(outputArray, false);
+            // Adds the negative sign back to the output if the input was negative.
             if (isNegative) output = -output;
             return output;
         }
 
         function convertDecimalToBinarySigned() {
+            // Creates an array with the size of all of the powers of 2 in the powers array.
             let outputArray = new Array(powers.length);
-            let remainder;
 
+            // Sets remainder to the absolute value of the input so that the for-loop below knows which binary digits can be filled.
+            let remainder;
             let isNegative = false;
             if (input < 0) {
                 isNegative = true;
@@ -312,10 +416,13 @@
                 remainder = input;
             }
 
+            // Loops through the powers of 2 by finding the highest power of 2 that it can add, filling the binary digit for those that can be added,
+            // and subtracting that power of 2 from the remainder so that there is a record of how much still needs to be accounted for.
             let foundFirstDigit = false;
             let firstDigit;
             for (let i = powers.length - 1; i >= 0; i--) {
                 if (powers[i] <= remainder) {
+                    // Stores the index of the first filled digit (index with 1) for the purpose of adding the sign bit in front of it after the loop.
                     if (!foundFirstDigit) {
                         foundFirstDigit = true;
                         firstDigit = i;
@@ -328,19 +435,56 @@
                 }
             }
 
+            // Adds the sign bit in front of the binary number.
             if (isNegative) {
                 outputArray[firstDigit + 1] = 1;
             } else {
                 outputArray[firstDigit + 1] = 0;
             }
 
-            let output = createBinaryOutput(outputArray, true);
+            let output = createBinaryOutputRightToLeft(outputArray, true);
             return output;
         }
 
-        function createBinaryOutput(outputArray, keepLeading0) {
+        function convertDecimalToBinary2sComp() {
+            if (input >= 0) {
+                // If the input is positive or 0, then the signed binary is returned.
+                let output = convertDecimalToBinarySigned();
+                return output;
+            } else {
+                // If the input is negative, then the unsigned binary version of the input will be used as the basis for complementing.
+                let unsignedBinary = convertDecimalToBinaryUnsigned();
+                let outputArray = Array.from(String(unsignedBinary), Number);
+                // The negative sign is replaced with a 0 (which will later be switched to a 1) so that the answer will be only numbers.
+                outputArray[0] = 0;
+
+                // Starts reading the binary from right to left until the first 1 is found. i is decremented to the next digit.
+                let i;
+                for (i = outputArray.length - 1; i >= 0; i--) {
+                    if (outputArray[i] == 1) {
+                        i--;
+                        break;
+                    }
+                }
+
+                // From i moving left, all digits are complemented.
+                for (i; i >= 0; i--) {
+                    if (outputArray[i] == 0) {
+                        outputArray[i] = 1;
+                    } else {
+                        outputArray[i] = 0;
+                    }
+                }
+
+                let output = createBinaryOutputLeftToRight(outputArray);
+                return output;
+            }
+        }
+
+        function createBinaryOutputRightToLeft(outputArray, keepLeading0) {
             let outputString = "";
 
+            // Finds the first index with a value of 1 (for the purpose of trimming leading 0s).
             let i;
             for (i = outputArray.length - 1; i >= 0; i--) {
                 if (outputArray[i] == 1) {
@@ -348,10 +492,12 @@
                 }
             }
 
+            // Keeps the leading 0 if requested.
             if (keepLeading0 && input >= 0) {
                 i++;
             }
 
+            // Adds all digits to the outputString.
             for (i; i >= 0; i--) {
                 outputString += outputArray[i];
             }
@@ -359,6 +505,18 @@
             return outputString;
         }
 
+        function createBinaryOutputLeftToRight(outputArray) {
+            let outputString = "";
+
+            // Adds all digits to the outputString.
+            for (let i = 0; i < outputArray.length; i++) {
+                outputString += outputArray[i];
+            }
+
+            return outputString;
+        }
+
+        // Returns the appropriate subscript to display for the number based on its type.
         function getSubscript(baseType) {
             let subscript;
 
@@ -367,6 +525,9 @@
                     subscript = "2";
                     break;
                 case "binarySigned":
+                    subscript = "2";
+                    break;
+                case "binary2sComp":
                     subscript = "2";
                     break;
                 case "decimal":
@@ -380,47 +541,63 @@
             return subscript;
         }
 
+        // Prevents calculation of outputs based on many fail cases for the inputs and instructs the user what to do to resolve them.
         function ensureAllInputsSelected() {
+            // Removes all leading and trailing white spaces.
             input = input.trim();
 
+            // Requires an input.
             if (input == "") {
                 document.getElementById("output").innerHTML = "Please enter an input.";
+                document.getElementById("outputValueField").innerHTML = "";
                 return false;
             }
 
+            // Requires only number inputs.
             if (isNaN(input) || isNaN(parseFloat(input))) {
                 document.getElementById("output").innerHTML = "Please only enter numbers for the input.";
+                document.getElementById("outputValueField").innerHTML = "";
                 return false;
             }
 
+            // Requires an inputType to be selected.
             if (inputType == "none") {
                 document.getElementById("output").innerHTML = "Please select an input type.";
+                document.getElementById("outputValueField").innerHTML = "";
                 return false;
             }
 
+            // Requires an outputType to be selected.
             if (outputType == "none") {
                 document.getElementById("output").innerHTML = "Please select an output type.";
+                document.getElementById("outputValueField").innerHTML = "";
                 return false;
             }
 
+            // Requires the inputType and outputType to be different so an actual calculation can be made (this also prevents probable user error).
             if (inputType == outputType) {
                 document.getElementById("output").innerHTML = "Please make sure the input type and output type are different from each other.";
+                document.getElementById("outputValueField").innerHTML = "";
                 return false;
             }
 
+            // Requires that non-unsigned binary doesn't have a negative sign.
             if (inputType == "binarySigned" || inputType == "binary2sComp") {
                 if (input < 0) {
                         document.getElementById("output").innerHTML = "Please make sure the input does not have a negative sign.";
+                        document.getElementById("outputValueField").innerHTML = "";
                         return false;
                 }
             }
 
+            // Requires that the input is only composed of 1s, 0s, or a negative sign in the first index.
             if (inputType == "binaryUnsigned" || inputType == "binarySigned" || inputType == "binary2sComp") {
                 let binaryArray = Array.from(String(input), Number);
 
                 for (let i = 0; i < binaryArray.length; i++) {
-                    if (binaryArray[i] != 0 && binaryArray[i] != 1 && (i == 0 && input >= 0)) {
+                    if (binaryArray[i] != 0 && binaryArray[i] != 1 && (i > 0 || (i == 0 && input > 0))) {
                         document.getElementById("output").innerHTML = "Please make sure the input is only composed of 1s and 0s.";
+                        document.getElementById("outputValueField").innerHTML = "";
                         return false;
                     }
                 }
@@ -430,16 +607,23 @@
         }
 
 	    function displayOutput() {
+            // Collects all inputs from the user.
             input = document.getElementById("inputValueField").value;
             inputType = document.getElementById("inputTypeSelect").value;
             outputType = document.getElementById("outputTypeSelect").value;
 
+            // Allows the output to be visible if it isn't already.
+            document.getElementById("output").style.visibility = "visible";
+
+            // Only allows the outputs to be updated if the inputs are valid.
             let allInputsSelected = ensureAllInputsSelected();
             if (allInputsSelected == true) {
+                // Displays all formatted end forms of the output.
                 let output = calculateOutput();
                 let inputSubscript = getSubscript(inputType);
                 let outputSubscript = getSubscript(outputType);
 
+                document.getElementById("outputValueField").innerHTML = output;
                 document.getElementById("output").innerHTML = input + inputSubscript.sub() + " = " + output + outputSubscript.sub();
             }
 	    }
