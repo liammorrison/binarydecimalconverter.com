@@ -277,30 +277,58 @@
         // Chooses the appropriate conversion to run based on the input and output types.
         function calculateOutput() {
             if (inputType == "binaryUnsigned" && outputType == "decimal") {
-                let output = convertBinaryUnsignedToDecimal();
+                let output = convertBinaryUnsignedToDecimal(input);
+                return output;
+            } else if (inputType == "binaryUnsigned" && outputType == "hex") {
+                let output = convertBinaryToHex(input);
                 return output;
             } else if (inputType == "binarySigned" && outputType == "decimal") {
-                let output = convertBinarySignedToDecimal();
+                let output = convertBinarySignedToDecimal(input);
+                return output;
+            } else if (inputType == "binarySigned" && outputType == "hex") {
+                let output = convertBinaryToHex(input);
                 return output;
             } else if (inputType == "binary2sComp" && outputType == "decimal") {
-                let output = convertBinary2sCompToDecimal();
+                let output = convertBinary2sCompToDecimal(input);
+                return output;
+            } else if (inputType == "binary2sComp" && outputType == "hex") {
+                let output = convertBinaryToHex(input);
                 return output;
             } else if (inputType == "decimal" && outputType == "binaryUnsigned") {
-                let output = convertDecimalToBinaryUnsigned();
+                let output = convertDecimalToBinaryUnsigned(input);
                 return output;
             } else if (inputType == "decimal" && outputType == "binarySigned") {
-                let output = convertDecimalToBinarySigned();
+                let output = convertDecimalToBinarySigned(input);
                 return output;
             } else if (inputType == "decimal" && outputType == "binary2sComp") {
-                let output = convertDecimalToBinary2sComp();
+                let output = convertDecimalToBinary2sComp(input);
+                return output;
+            } else if (inputType == "decimal" && outputType == "hex") {
+                // Converts decimal to hex using binary 2's complement as a mediator.
+                let binary2sComp = convertDecimalToBinary2sComp(input);
+                let output = convertBinaryToHex(binary2sComp);
+                return output;
+            } else if (inputType == "hex" && outputType == "binaryUnsigned") {
+                let output = convertHexToBinary(input);
+                return output;
+            } else if (inputType == "hex" && outputType == "binarySigned") {
+                let output = convertHexToBinary(input);
+                return output;
+            } else if (inputType == "hex" && outputType == "binary2sComp") {
+                let output = convertHexToBinary(input);
+                return output;
+            } else if (inputType == "hex" && outputType == "decimal") {
+                // Converts hex to decimal using binary 2's complement as a mediator.
+                let binary2sComp = convertHexToBinary(input);
+                let output = convertBinary2sCompToDecimal(binary2sComp);
                 return output;
             }
         }
 
-        function convertBinaryUnsignedToDecimal() {
+        function convertBinaryUnsignedToDecimal(binary) {
             let decimalTotal = 0;
             // Converts the input into an array with each digit as its own item.
-            let binaryArray = Array.from(String(input), Number);
+            let binaryArray = Array.from(String(binary), Number);
 
             // Adds the decimal value for each filled binary digit to the decimalTotal.
             let j = 0;
@@ -313,17 +341,17 @@
             }
 
             // Adds the negative sign back to the output if the input was negative.
-            if (input < 0) {
+            if (binary < 0) {
                 return -decimalTotal;
             } else {
                 return decimalTotal;
             }
         }
 
-        function convertBinarySignedToDecimal() {
+        function convertBinarySignedToDecimal(binary) {
             let decimalTotal = 0;
             // Converts the input into an array with each digit as its own item.
-            let binaryArray = Array.from(String(input), Number);
+            let binaryArray = Array.from(String(binary), Number);
 
             // Adds the decimal value for each filled binary digit (except the first digit) to the decimalTotal.
             let j = 0;
@@ -343,14 +371,14 @@
             }
         }
 
-        function convertBinary2sCompToDecimal() {
+        function convertBinary2sCompToDecimal(binary) {
             let decimalTotal = 0;
             // Converts the input into an array with each digit as its own item.
-            let binaryArray = Array.from(String(input), Number);
+            let binaryArray = Array.from(String(binary), Number);
 
             if (binaryArray[0] == 0) {
                 // If the input is positive or 0, then the unsigned binary is returned.
-                decimalTotal = convertBinaryUnsignedToDecimal();
+                decimalTotal = convertBinaryUnsignedToDecimal(binary);
             } else {
                 // If the input is negative, then:
                 // 1) The 0 bits have their corresponding decimal values added to decimalTotal.
@@ -371,18 +399,18 @@
             return decimalTotal;
         }
 
-        function convertDecimalToBinaryUnsigned() {
+        function convertDecimalToBinaryUnsigned(decimal) {
             // Creates an array with the size of all of the powers of 2 in the powers array.
             let outputArray = new Array(powers.length);
             
             // Sets remainder to the absolute value of the input so that the for-loop below knows which binary digits can be filled.
             let remainder;
             let isNegative = false;
-            if (input < 0) {
+            if (decimal < 0) {
                 isNegative = true;
-                remainder = -input;
+                remainder = -decimal;
             } else {
-                remainder = input;
+                remainder = decimal;
             }
 
             // Loops through the powers of 2 by finding the highest power of 2 that it can add, filling the binary digit for those that can be added,
@@ -402,18 +430,18 @@
             return output;
         }
 
-        function convertDecimalToBinarySigned() {
+        function convertDecimalToBinarySigned(decimal) {
             // Creates an array with the size of all of the powers of 2 in the powers array.
             let outputArray = new Array(powers.length);
 
             // Sets remainder to the absolute value of the input so that the for-loop below knows which binary digits can be filled.
             let remainder;
             let isNegative = false;
-            if (input < 0) {
+            if (decimal < 0) {
                 isNegative = true;
-                remainder = -input;
+                remainder = -decimal;
             } else {
-                remainder = input;
+                remainder = decimal;
             }
 
             // Loops through the powers of 2 by finding the highest power of 2 that it can add, filling the binary digit for those that can be added,
@@ -446,14 +474,14 @@
             return output;
         }
 
-        function convertDecimalToBinary2sComp() {
-            if (input >= 0) {
+        function convertDecimalToBinary2sComp(decimal) {
+            if (decimal >= 0) {
                 // If the input is positive or 0, then the signed binary is returned.
-                let output = convertDecimalToBinarySigned();
+                let output = convertDecimalToBinarySigned(decimal);
                 return output;
             } else {
                 // If the input is negative, then the unsigned binary version of the input will be used as the basis for complementing.
-                let unsignedBinary = convertDecimalToBinaryUnsigned();
+                let unsignedBinary = convertDecimalToBinaryUnsigned(decimal);
                 let outputArray = Array.from(String(unsignedBinary), Number);
                 // The negative sign is replaced with a 0 (which will later be switched to a 1) so that the answer will be only numbers.
                 outputArray[0] = 0;
@@ -479,6 +507,122 @@
                 let output = createBinaryOutputLeftToRight(outputArray);
                 return output;
             }
+        }
+
+        function convertBinaryToHex(binary) {
+            let hex = "";
+            // Converts the input into an array with each digit as its own item.
+            let binaryArray = Array.from(String(binary), Number);
+
+            // For each group of 4 digits starting from the end, the group's binary is converted to decimal and added to the string.
+            for (let i = binaryArray.length - 1; i >= 0; i -= 4) {
+                let fourBitBinary = "";
+                for (let j = Math.max(0, i - 3); j <= i; j++) {
+                    if (!isNaN(binaryArray[j])) {
+                        fourBitBinary += binaryArray[j];
+                    }
+                }
+
+                // Converts the fourBitDecimal into a single Hex character.
+                let fourBitDecimal = convertBinaryUnsignedToDecimal(Number(fourBitBinary));
+                if (fourBitDecimal >= 10) {
+                    switch (fourBitDecimal) {
+                        case 10:
+                            fourBitDecimal = "A";
+                            break;
+                        case 11:
+                            fourBitDecimal = "B";
+                            break;
+                        case 12:
+                            fourBitDecimal = "C";
+                            break;
+                        case 13:
+                            fourBitDecimal = "D";
+                            break;
+                        case 14:
+                            fourBitDecimal = "E";
+                            break;
+                        case 15:
+                            fourBitDecimal = "F";
+                            break;
+                    }
+                }
+
+                hex = fourBitDecimal + hex;
+            }
+
+            // Makes the answer negative if the input was negative.
+            if (binary < 0) {
+                hex = "-" + hex;
+            }
+
+            return hex;
+        }
+
+        function convertHexToBinary(hex) {
+            let binary = "";
+            // Converts the input into an array with each digit as its own item.
+            let hexArray = Array.from(String(hex), String);
+
+            // Adds each hex bit's corresponding 4-bit binary to the output.
+            for (let i = 0; i < hexArray.length; i++) {
+                let currentHex = hexArray[i];
+                let fourBitBinary;
+                switch (currentHex) {
+                    case "0":
+                        fourBitBinary = "0000";
+                        break;
+                    case "1":
+                        fourBitBinary = "0001";
+                        break;
+                    case "2":
+                        fourBitBinary = "0010";
+                        break;
+                    case "3":
+                        fourBitBinary = "0011";
+                        break;
+                    case "4":
+                        fourBitBinary = "0100";
+                        break;
+                    case "5":
+                        fourBitBinary = "0101";
+                        break;
+                    case "6":
+                        fourBitBinary = "0110";
+                        break;
+                    case "7":
+                        fourBitBinary = "0111";
+                        break;
+                    case "8":
+                        fourBitBinary = "1000";
+                        break;
+                    case "9":
+                        fourBitBinary = "1001";
+                        break;
+                    case "A":
+                        fourBitBinary = "1010";
+                        break;
+                    case "B":
+                        fourBitBinary = "1011";
+                        break;
+                    case "C":
+                        fourBitBinary = "1100";
+                        break;
+                    case "D":
+                        fourBitBinary = "1101";
+                        break;
+                    case "E":
+                        fourBitBinary = "1110";
+                        break;
+                    case "F":
+                        fourBitBinary = "1111";
+                        break;
+                }
+
+                binary += fourBitBinary;
+            }
+
+            return binary;
         }
 
         function createBinaryOutputRightToLeft(outputArray, keepLeading0) {
@@ -553,11 +697,26 @@
                 return false;
             }
 
-            // Requires only number inputs.
-            if (isNaN(input) || isNaN(parseFloat(input))) {
-                document.getElementById("output").innerHTML = "Please only enter numbers for the input.";
-                document.getElementById("outputValueField").innerHTML = "";
-                return false;
+            // Requires only number values for non-hex inputs.
+            // Requires only number or A-F values for hex inputs.
+            if (inputType != "hex") {
+                if (isNaN(input) || isNaN(parseFloat(input))) {
+                    document.getElementById("output").innerHTML = "Please only enter numbers for the input.";
+                    document.getElementById("outputValueField").innerHTML = "";
+                    return false;
+                }
+            } else {
+                input = input.toUpperCase();
+
+                let inputArray = Array.from(String(input), String);
+                for (let i = 0; i < inputArray.length; i++) {
+                    let char = inputArray[i];
+                    if (isNaN(parseInt(char)) && char != "A" && char != "B" && char != "C" && char != "D" && char != "E" && char != "F") {
+                        document.getElementById("output").innerHTML = "Please only enter numbers or letters A-F for the input.";
+                        document.getElementById("outputValueField").innerHTML = "";
+                        return false;
+                    }
+                }
             }
 
             // Requires an inputType to be selected.
