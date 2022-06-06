@@ -276,11 +276,23 @@
 
         // Chooses the appropriate conversion to run based on the input and output types.
         function calculateOutput() {
-            if (inputType == "binaryUnsigned" && outputType == "decimal") {
+            if (inputType == "binaryUnsigned" && outputType == "binarySigned") {
+                let output = convertBinaryUnsignedToBinarySigned(input);
+                return output;
+            } else if (inputType == "binaryUnsigned" && outputType == "binary2sComp") {
+                let output = convertBinaryUnsignedToBinary2sComp(input);
+                return output;
+            } else if (inputType == "binaryUnsigned" && outputType == "decimal") {
                 let output = convertBinaryUnsignedToDecimal(input);
                 return output;
             } else if (inputType == "binaryUnsigned" && outputType == "hex") {
                 let output = convertBinaryToHex(input);
+                return output;
+            } else if (inputType == "binarySigned" && outputType == "binaryUnsigned") {
+                let output = convertBinarySignedToBinaryUnsigned(input);
+                return output;
+            } else if (inputType == "binarySigned" && outputType == "binary2sComp") {
+                let output = convertBinarySignedToBinary2sComp(input);
                 return output;
             } else if (inputType == "binarySigned" && outputType == "decimal") {
                 let output = convertBinarySignedToDecimal(input);
@@ -290,6 +302,12 @@
                 return output;
             } else if (inputType == "binary2sComp" && outputType == "decimal") {
                 let output = convertBinary2sCompToDecimal(input);
+                return output;
+            } else if (inputType == "binary2sComp" && outputType == "binaryUnsigned") {
+                let output = convertBinary2sCompToBinaryUnsigned(input);
+                return output;
+            } else if (inputType == "binary2sComp" && outputType == "binarySigned") {
+                let output = convertBinary2sCompToBinarySigned(input);
                 return output;
             } else if (inputType == "binary2sComp" && outputType == "hex") {
                 let output = convertBinaryToHex(input);
@@ -348,6 +366,80 @@
             }
         }
 
+        function convertBinaryUnsignedToBinarySigned(binaryUnsigned) {
+            let binarySigned;
+
+            if (binaryUnsigned >= 0) {
+                binarySigned = "0" + binaryUnsigned;
+            } else {
+                binarySigned = "1" + binaryUnsigned.substring(1);
+            }
+
+            return binarySigned;
+        }
+
+        function convertBinaryUnsignedToBinary2sComp(binaryUnsigned) {
+            let output;
+
+            if (binaryUnsigned >= 0) {
+                // If the input is positive or 0, then the signed binary is returned.
+                output = convertBinaryUnsignedToBinarySigned(binaryUnsigned);
+                return output;
+            } else {
+                // Converts the input into an array with each digit as its own item.
+                let outputArray = Array.from(String(binaryUnsigned), Number);
+                // The negative sign is replaced with a 0 (which will later be switched to a 1) so that the answer will be only numbers.
+                outputArray[0] = 0;
+
+                // Starts reading the binary from right to left until the first 1 is found. i is then decremented to the next digit.
+                let i;
+                for (i = outputArray.length - 1; i >= 0; i--) {
+                    if (outputArray[i] == 1) {
+                        i--;
+                        break;
+                    }
+                }
+
+                // From i moving left, all digits are complemented.
+                for (i; i >= 0; i--) {
+                    if (outputArray[i] == 0) {
+                        outputArray[i] = 1;
+                    } else {
+                        outputArray[i] = 0;
+                    }
+                }
+
+                output = createBinaryOutputLeftToRight(outputArray);
+
+                // Removes the redundant leading one that comes with inputs being having only a one on the highest digit.
+                if (output.substring(0, 2) == "11") {
+                    output = output.substring(1);
+                }
+
+                return output;
+            }
+        }
+
+        function convertBinarySignedToBinaryUnsigned(binarySigned) {
+            let binaryUnsigned;
+
+            // Removes leading 0s or replaces a leading 1 with a negative sign.
+            if (binarySigned.substring(0, 1) == 0) {
+                binaryUnsigned = binarySigned.substring(1);
+            } else {
+                binaryUnsigned = "-" + binarySigned.substring(1);
+            }
+
+            return binaryUnsigned;
+        }
+
+        function convertBinarySignedToBinary2sComp(binarySigned) {
+            // Converts signed binary to unsigned binary to 2's complement binary.
+            let binaryUnsigned = convertBinarySignedToBinaryUnsigned(binarySigned);
+            let output = convertBinaryUnsignedToBinary2sComp(binaryUnsigned);
+            return output;
+        }
+
         function convertBinarySignedToDecimal(binary) {
             let decimalTotal = 0;
             // Converts the input into an array with each digit as its own item.
@@ -369,6 +461,57 @@
             } else {
                 return decimalTotal;
             }
+        }
+
+        function convertBinary2sCompToBinaryUnsigned(binary2sComp) {
+            let output;
+
+            if (binary2sComp.substring(0, 1) == 0) {
+                // Converts the input into an array with each digit as its own item.
+                let outputArray = Array.from(String(binary2sComp), Number);
+                // Converts into an array and back so the function below can remove all redundant leading 0s.
+                let output = createBinaryOutputLeftToRight(outputArray);
+                return output;
+            } else {
+                // Converts the input into an array with each digit as its own item.
+                let outputArray = Array.from(String(binary2sComp), Number);
+
+                // Starts reading the binary from right to left until the first 1 is found. i is then decremented to the next digit.
+                let i;
+                for (i = outputArray.length - 1; i >= 0; i--) {
+                    if (outputArray[i] == 1) {
+                        i--;
+                        break;
+                    }
+                }
+
+                // From i moving left, all digits are complemented.
+                for (i; i >= 0; i--) {
+                    if (outputArray[i] == 0) {
+                        outputArray[i] = 1;
+                    } else {
+                        outputArray[i] = 0;
+                    }
+                }
+
+                output = "-" + createBinaryOutputLeftToRight(outputArray);
+                return output;
+            }
+        }
+
+        function convertBinary2sCompToBinarySigned(binary2sComp) {
+            // Converts the 2's complement binary to unsigned binary
+            let binarySigned = convertBinary2sCompToBinaryUnsigned(binary2sComp);
+
+            // Replaces the negative sign with 1 or prefixes the unsigned binary with 0 if it isn't
+            let output;
+            if (binarySigned.substring(0, 1) == "-") {
+                output = "1" + binarySigned.substring(1);
+            } else {
+                output = "0" + binarySigned;
+            }
+
+            return output;
         }
 
         function convertBinary2sCompToDecimal(binary) {
@@ -475,38 +618,10 @@
         }
 
         function convertDecimalToBinary2sComp(decimal) {
-            if (decimal >= 0) {
-                // If the input is positive or 0, then the signed binary is returned.
-                let output = convertDecimalToBinarySigned(decimal);
-                return output;
-            } else {
-                // If the input is negative, then the unsigned binary version of the input will be used as the basis for complementing.
-                let unsignedBinary = convertDecimalToBinaryUnsigned(decimal);
-                let outputArray = Array.from(String(unsignedBinary), Number);
-                // The negative sign is replaced with a 0 (which will later be switched to a 1) so that the answer will be only numbers.
-                outputArray[0] = 0;
-
-                // Starts reading the binary from right to left until the first 1 is found. i is decremented to the next digit.
-                let i;
-                for (i = outputArray.length - 1; i >= 0; i--) {
-                    if (outputArray[i] == 1) {
-                        i--;
-                        break;
-                    }
-                }
-
-                // From i moving left, all digits are complemented.
-                for (i; i >= 0; i--) {
-                    if (outputArray[i] == 0) {
-                        outputArray[i] = 1;
-                    } else {
-                        outputArray[i] = 0;
-                    }
-                }
-
-                let output = createBinaryOutputLeftToRight(outputArray);
-                return output;
-            }
+            // Converts decimal to unsigned binary to 2's complement binary.
+            let unsignedBinary = convertDecimalToBinaryUnsigned(decimal);
+            let output = convertBinaryUnsignedToBinary2sComp(unsignedBinary);
+            return output;
         }
 
         function convertBinaryToHex(binary) {
@@ -646,15 +761,33 @@
                 outputString += outputArray[i];
             }
 
+            // Prevents errors with 0 as an input.
+            if (outputString == "") {
+                outputString = "0";
+            }
+
             return outputString;
         }
 
         function createBinaryOutputLeftToRight(outputArray) {
             let outputString = "";
 
+            // Finds the first index with a value of 1 (for the purpose of trimming leading 0s).
+            let i;
+            for (i = 0; i < outputArray.length; i++) {
+                if (outputArray[i] == 1) {
+                    break;
+                }
+            }
+
             // Adds all digits to the outputString.
-            for (let i = 0; i < outputArray.length; i++) {
+            for (i; i < outputArray.length; i++) {
                 outputString += outputArray[i];
+            }
+
+            // Prevents errors with 0 as an input.
+            if (outputString == "") {
+                outputString = "0";
             }
 
             return outputString;
