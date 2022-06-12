@@ -215,7 +215,7 @@
         <div id="title">Binary Decimal Converter</div>
     </div>
     <div id="body">
-        <p id="instructions" class="darkText">Welcome to the Binary Decimal Converter!<br><br>Please enter the value that you'd like to have converted. Select the input and output types that you'd like. Then click the Calculate button to receive the output.</p>
+        <p id="instructions" class="darkText">Welcome to the Binary Decimal Converter!<br><br>Please enter the value to be converted. Select the input and output types. Then click the Calculate button to receive the output.</p>
         <div id="inputs">
             <div id="inputType" class="lightText">
                 <div id="inputTypeText">Input Type:</div>
@@ -375,7 +375,8 @@
                 binarySigned = "1" + binaryUnsigned.substring(1);
             }
 
-            return binarySigned;
+            let output = removeLeadingZeros(binarySigned, true);
+            return output;
         }
 
         function convertBinaryUnsignedToBinary2sComp(binaryUnsigned) {
@@ -410,6 +411,7 @@
                 }
 
                 output = createBinaryOutputLeftToRight(outputArray);
+                output = removeLeadingZeros(output, true);
 
                 // Removes the redundant leading one that comes with inputs being having only a one on the highest digit.
                 if (output.substring(0, 2) == "11") {
@@ -430,7 +432,8 @@
                 binaryUnsigned = "-" + binarySigned.substring(1);
             }
 
-            return binaryUnsigned;
+            let output = removeLeadingZeros(binaryUnsigned, false);
+            return output;
         }
 
         function convertBinarySignedToBinary2sComp(binarySigned) {
@@ -471,6 +474,7 @@
                 let outputArray = Array.from(String(binary2sComp), Number);
                 // Converts into an array and back so the function below can remove all redundant leading 0s.
                 let output = createBinaryOutputLeftToRight(outputArray);
+                output = removeLeadingZeros(output, false);
                 return output;
             } else {
                 // Converts the input into an array with each digit as its own item.
@@ -494,7 +498,9 @@
                     }
                 }
 
-                output = "-" + createBinaryOutputLeftToRight(outputArray);
+                output = createBinaryOutputLeftToRight(outputArray);
+                output = removeLeadingZeros(output, false);
+                output = "-" + output;
                 return output;
             }
         }
@@ -511,6 +517,7 @@
                 output = "0" + binarySigned;
             }
 
+            output = removeLeadingZeros(output, true);
             return output;
         }
 
@@ -567,7 +574,8 @@
                 }
             }
 
-            let output = createBinaryOutputRightToLeft(outputArray, false);
+            let output = createBinaryOutputRightToLeft(outputArray);
+            output = removeLeadingZeros(output, false);
             // Adds the negative sign back to the output if the input was negative.
             if (isNegative) output = -output;
             return output;
@@ -613,7 +621,8 @@
                 outputArray[firstDigit + 1] = 0;
             }
 
-            let output = createBinaryOutputRightToLeft(outputArray, true);
+            let output = createBinaryOutputRightToLeft(outputArray);
+            output = removeLeadingZeros(output, true);
             return output;
         }
 
@@ -740,24 +749,11 @@
             return binary;
         }
 
-        function createBinaryOutputRightToLeft(outputArray, keepLeading0) {
+        function createBinaryOutputRightToLeft(outputArray) {
             let outputString = "";
 
-            // Finds the first index with a value of 1 (for the purpose of trimming leading 0s).
-            let i;
-            for (i = outputArray.length - 1; i >= 0; i--) {
-                if (outputArray[i] == 1) {
-                    break;
-                }
-            }
-
-            // Keeps the leading 0 if requested.
-            if (keepLeading0 && input >= 0) {
-                i++;
-            }
-
             // Adds all digits to the outputString.
-            for (i; i >= 0; i--) {
+            for (let i = outputArray.length - 1; i >= 0; i--) {
                 outputString += outputArray[i];
             }
 
@@ -772,22 +768,32 @@
         function createBinaryOutputLeftToRight(outputArray) {
             let outputString = "";
 
-            // Finds the first index with a value of 1 (for the purpose of trimming leading 0s).
-            let i;
-            for (i = 0; i < outputArray.length; i++) {
-                if (outputArray[i] == 1) {
-                    break;
-                }
-            }
-
             // Adds all digits to the outputString.
-            for (i; i < outputArray.length; i++) {
+            for (let i = 0; i < outputArray.length; i++) {
                 outputString += outputArray[i];
             }
 
             // Prevents errors with 0 as an input.
             if (outputString == "") {
                 outputString = "0";
+            }
+
+            return outputString;
+        }
+
+        function removeLeadingZeros(inputString, keepLeadingZero) {
+            let outputString = inputString;
+            for (let i = 0; i < inputString.length; i++) {
+                let digit = inputString.substring(i, i+ 1);
+                if (digit == 0) {
+                    if (keepLeadingZero) {
+                        outputString = inputString.substring(i);
+                    } else {
+                        outputString = inputString.substring(i + 1);
+                    }
+                } else {
+                    break;
+                }
             }
 
             return outputString;
