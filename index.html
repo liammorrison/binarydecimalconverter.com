@@ -272,7 +272,7 @@
         let outputType = "Not Selected";
 
         // Creates an array filled with many powers of 2 for binary base conversions.
-        let powers = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152];
+        let powers = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824, 2147483648];
 
         // Chooses the appropriate conversion to run based on the input and output types.
         function calculateOutput() {
@@ -577,7 +577,7 @@
             let output = createBinaryOutputRightToLeft(outputArray);
             output = removeLeadingZeros(output, false);
             // Adds the negative sign back to the output if the input was negative.
-            if (isNegative) output = -output;
+            if (isNegative) output = "-" + output;
             return output;
         }
 
@@ -901,6 +901,26 @@
                 }
             }
 
+            if ((inputType == "binaryUnsigned" || inputType == "binarySigned" || inputType == "binary2sComp") && input.length > 33) {
+                document.getElementById("output").innerHTML = "Please make sure the input is less than 34 digits.";
+                document.getElementById("outputValueField").innerHTML = "";
+                return false;
+            }
+
+            // Requires that the input is less than 4294967296 (32 binary bits).
+            if (inputType == "decimal" && Math.abs(input) > 4294967295) {
+                document.getElementById("output").innerHTML = "Please make sure the absolute value of the input is less than 4,294,976,296.";
+                document.getElementById("outputValueField").innerHTML = "";
+                return false;
+            }
+
+            // Requires hex inputs to be 8 characters or less so they can be displayed.
+            if (inputType == "hex" && input.length > 8) {
+                document.getElementById("output").innerHTML = "Please make sure the hex input is less than 8 characters long.";
+                document.getElementById("outputValueField").innerHTML = "";
+                return false;
+            }
+
             return true;
         }
 
@@ -921,8 +941,18 @@
                 let inputSubscript = getSubscript(inputType);
                 let outputSubscript = getSubscript(outputType);
 
-                document.getElementById("outputValueField").innerHTML = output;
-                document.getElementById("output").innerHTML = input + inputSubscript.sub() + " = " + output + outputSubscript.sub();
+                if (outputType != "hex" && isNaN(output)) {
+                    // Requires that all binary to decimal conversions are within the proper limits.
+                    document.getElementById("output").innerHTML = "Please make sure the absolute value of the output is less than 4,294,976,296.";
+                    document.getElementById("outputValueField").innerHTML = "";
+                } else if (outputType == "hex" && output.length > 8) {
+                    document.getElementById("output").innerHTML = "Please make sure the input can be represented in 8 hex characters.";
+                    document.getElementById("outputValueField").innerHTML = "";
+                } else {
+                    // Displays the output if everything is valid.
+                    document.getElementById("outputValueField").innerHTML = output;
+                    document.getElementById("output").innerHTML = input + inputSubscript.sub() + " = " + output + outputSubscript.sub();
+                }
             }
 	    }
     </script>
