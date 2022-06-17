@@ -64,7 +64,7 @@
         #body {
             width: 800px;
             margin: 10px auto;
-            padding: 16px;
+            padding: 12px;
 
             background-color: lightskyblue;
 
@@ -75,19 +75,27 @@
         }
 
         #instructions {
-            width: 800px;
-            margin: 0px auto 16px;
+            padding: 12px;
+
+            background-color: navy;
+
             text-align: center;
+
+            border-style: ridge;
+            border-color: midnightblue;
+            border-width: 4px;
+            border-radius: 12px;
         }
 
         #inputs {
+            margin-top: 10px;
             padding: 12px;
 
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-gap: 13px;
 
-            background-color: darkslateblue;
+            background-color: navy;
 
             border-style: ridge;
             border-color: midnightblue;
@@ -181,12 +189,12 @@
         }
 
         #output {
-            margin-top: 16px;
-            padding: 8px 0px;
+            margin-top: 10px;
+            padding: 12px 0px;
 
-            background-color: steelblue;
+            background-color: navy;
 
-            font-size: 22px;
+            font-size: 24px;
             text-align: center;
 
             border-style: ridge;
@@ -195,6 +203,34 @@
             border-radius: 8px;
 
             visibility: hidden;
+        }
+
+        #output:empty {
+            margin: 0px;
+            padding: 0px;
+            border-width: 0px;
+        }
+
+        #explanation {
+            margin-top: 10px;
+            padding: 12px;
+
+            background-color: navy;
+
+            text-align: center;
+
+            border-style: ridge;
+            border-color: midnightblue;
+            border-width: 4px;
+            border-radius: 8px;
+
+            visibility: hidden;
+        }
+
+        #explanation:empty {
+            margin: 0px;
+            padding: 0px;
+            border-width: 0px;
         }
 
         #footer {
@@ -215,7 +251,7 @@
         <div id="title">Binary Decimal Converter</div>
     </div>
     <div id="body">
-        <p id="instructions" class="darkText">Welcome to the Binary Decimal Converter!<br><br>Please enter the value to be converted. Select the input and output types. Then click the Calculate button to receive the output.</p>
+        <div id="instructions" class="lightText">Welcome to the Binary Decimal Converter!<br><br>Please enter the value to be converted. Select the input and output types. Then click the Calculate button to receive the output.</div>
         <div id="inputs">
             <div id="inputType" class="lightText">
                 <div id="inputTypeText">Input Type:</div>
@@ -252,6 +288,7 @@
             <button id="calculateButton" class="darkText">Calculate</button>
         </div>
         <div id="output" class="lightText"></div>
+        <div id="explanation" class="lightText"></div>
     </div>
 
     <footer id="footer" class="darkText">Liam Morrison, <script >document.write(new Date().getFullYear());</script></footer>
@@ -268,6 +305,10 @@
                 displayOutput();
             }
         });
+
+        let outputElement = document.getElementById("output");
+        let outputValueField = document.getElementById("outputValueField");
+        let explanation = document.getElementById("explanation");
 
         let input = 1;
         let inputType = "Not Selected";
@@ -380,8 +421,12 @@
 
             if (binaryUnsigned >= 0) {
                 binarySigned = "0" + binaryUnsigned;
+                explanation.innerHTML += "Add the positive sign (0) in front of the unsigned binary to make it signed.";
+                explanation.innerHTML += "<br>0 + " + binaryUnsigned + " = " + binarySigned;
             } else {
                 binarySigned = "1" + binaryUnsigned.substring(1);
+                explanation.innerHTML += "Replace the negative sign in front of the unsigned binary with a 1 to make it signed.";
+                explanation.innerHTML += "<br>" + binaryUnsigned + " -> " + binarySigned;
             }
 
             let output = removeLeadingZeros(binarySigned, true);
@@ -1055,8 +1100,8 @@
 
             // Requires an input.
             if (input == "") {
-                document.getElementById("output").innerHTML = "Please enter an input.";
-                document.getElementById("outputValueField").innerHTML = "";
+                outputElement.innerHTML = "Please enter an input.";
+                outputValueField.innerHTML = "";
                 return false;
             }
 
@@ -1064,8 +1109,8 @@
             // Requires only number or A-F values for hex inputs.
             if (inputType != "hex") {
                 if (isNaN(input) || isNaN(parseFloat(input))) {
-                    document.getElementById("output").innerHTML = "Please only enter numbers for the input.";
-                    document.getElementById("outputValueField").innerHTML = "";
+                    outputElement.innerHTML = "Please only enter numbers for the input.";
+                    outputValueField.innerHTML = "";
                     return false;
                 }
             } else {
@@ -1075,8 +1120,8 @@
                 for (let i = 0; i < inputArray.length; i++) {
                     let char = inputArray[i];
                     if (isNaN(parseInt(char)) && char != "A" && char != "B" && char != "C" && char != "D" && char != "E" && char != "F") {
-                        document.getElementById("output").innerHTML = "Please only enter numbers or letters A-F for the input.";
-                        document.getElementById("outputValueField").innerHTML = "";
+                        outputElement.innerHTML = "Please only enter numbers or letters A-F for the input.";
+                        outputValueField.innerHTML = "";
                         return false;
                     }
                 }
@@ -1084,30 +1129,30 @@
 
             // Requires an inputType to be selected.
             if (inputType == "none") {
-                document.getElementById("output").innerHTML = "Please select an input type.";
-                document.getElementById("outputValueField").innerHTML = "";
+                outputElement.innerHTML = "Please select an input type.";
+                outputValueField.innerHTML = "";
                 return false;
             }
 
             // Requires an outputType to be selected.
             if (outputType == "none") {
-                document.getElementById("output").innerHTML = "Please select an output type.";
-                document.getElementById("outputValueField").innerHTML = "";
+                outputElement.innerHTML = "Please select an output type.";
+                outputValueField.innerHTML = "";
                 return false;
             }
 
             // Requires the inputType and outputType to be different so an actual calculation can be made (this also prevents probable user error).
             if (inputType == outputType) {
-                document.getElementById("output").innerHTML = "Please make sure the input type and output type are different from each other.";
-                document.getElementById("outputValueField").innerHTML = "";
+                outputElement.innerHTML = "Please make sure the input type and output type are different from each other.";
+                outputValueField.innerHTML = "";
                 return false;
             }
 
             // Requires that non-unsigned binary doesn't have a negative sign.
             if (inputType == "binarySigned" || inputType == "binary1sComp" || inputType == "binary2sComp") {
                 if (input < 0) {
-                        document.getElementById("output").innerHTML = "Please make sure the input does not have a negative sign.";
-                        document.getElementById("outputValueField").innerHTML = "";
+                        outputElement.innerHTML = "Please make sure the input does not have a negative sign.";
+                        outputValueField.innerHTML = "";
                         return false;
                 }
             }
@@ -1118,30 +1163,30 @@
 
                 for (let i = 0; i < binaryArray.length; i++) {
                     if (binaryArray[i] != 0 && binaryArray[i] != 1 && (i > 0 || (i == 0 && input > 0))) {
-                        document.getElementById("output").innerHTML = "Please make sure the input is only composed of 1s and 0s.";
-                        document.getElementById("outputValueField").innerHTML = "";
+                        outputElement.innerHTML = "Please make sure the input is only composed of 1s and 0s.";
+                        outputValueField.innerHTML = "";
                         return false;
                     }
                 }
             }
 
             if ((inputType == "binaryUnsigned" || inputType == "binarySigned" || inputType == "binary1sComp" || inputType == "binary2sComp") && input.length > 33) {
-                document.getElementById("output").innerHTML = "Please make sure the input is less than 34 digits.";
-                document.getElementById("outputValueField").innerHTML = "";
+                outputElement.innerHTML = "Please make sure the input is less than 34 digits.";
+                outputValueField.innerHTML = "";
                 return false;
             }
 
             // Requires that the input is less than 4294967296 (32 binary bits).
             if (inputType == "decimal" && Math.abs(input) > 4294967295) {
-                document.getElementById("output").innerHTML = "Please make sure the absolute value of the input is less than 4,294,976,296.";
-                document.getElementById("outputValueField").innerHTML = "";
+                outputElement.innerHTML = "Please make sure the absolute value of the input is less than 4,294,976,296.";
+                outputValueField.innerHTML = "";
                 return false;
             }
 
             // Requires hex inputs to be 8 characters or less so they can be displayed.
             if (inputType == "hex" && input.length > 8) {
-                document.getElementById("output").innerHTML = "Please make sure the hex input is less than 8 characters long.";
-                document.getElementById("outputValueField").innerHTML = "";
+                outputElement.innerHTML = "Please make sure the hex input is less than 8 characters long.";
+                outputValueField.innerHTML = "";
                 return false;
             }
 
@@ -1154,8 +1199,12 @@
             inputType = document.getElementById("inputTypeSelect").value;
             outputType = document.getElementById("outputTypeSelect").value;
 
-            // Allows the output to be visible if it isn't already.
-            document.getElementById("output").style.visibility = "visible";
+            // Allows the output and explanation to be visible if they aren't already.
+            outputElement.style.visibility = "visible";
+            explanation.style.visibility = "visible";
+
+            // Resets all explanations.
+            explanation.innerHTML = "";
 
             // Only allows the outputs to be updated if the inputs are valid.
             let allInputsSelected = ensureAllInputsSelected();
@@ -1167,15 +1216,15 @@
 
                 if (outputType != "hex" && isNaN(output)) {
                     // Requires that all binary to decimal conversions are within the proper limits.
-                    document.getElementById("output").innerHTML = "Please make sure the absolute value of the output is less than 4,294,976,296.";
-                    document.getElementById("outputValueField").innerHTML = "";
+                    outputElement.innerHTML = "Please make sure the absolute value of the output is less than 4,294,976,296.";
+                    outputValueField.innerHTML = "";
                 } else if (outputType == "hex" && output.length > 8) {
-                    document.getElementById("output").innerHTML = "Please make sure the input can be represented in 8 hex characters.";
-                    document.getElementById("outputValueField").innerHTML = "";
+                    outputElement.innerHTML = "Please make sure the input can be represented in 8 hex characters.";
+                    outputValueField.innerHTML = "";
                 } else {
                     // Displays the output if everything is valid.
-                    document.getElementById("outputValueField").innerHTML = output;
-                    document.getElementById("output").innerHTML = input + inputSubscript.sub() + " = " + output + outputSubscript.sub();
+                    outputValueField.innerHTML = output;
+                    outputElement.innerHTML = input + inputSubscript.sub() + " = " + output + outputSubscript.sub();
                 }
             }
 	    }
