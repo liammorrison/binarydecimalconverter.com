@@ -8,6 +8,9 @@
 
     <style>
         body {
+            position: relative;
+            min-height: 98vh;
+
             margin-left: 0%;
             margin-right: 0%;
             margin-top: 0%;
@@ -59,6 +62,10 @@
             transform: translateY(-50%);
 
             white-space: nowrap;
+        }
+        
+        #content {
+            padding-bottom: 16px;
         }
 
         #body {
@@ -234,12 +241,11 @@
         }
 
         #footer {
-            position: relative;
-            bottom: 0;
+            position: absolute;
+            bottom: 0px;
+
             width: 100%;
             text-align: center;
-
-            padding: 0px, 10px;
 
             font-size: 15px;
         }
@@ -250,47 +256,48 @@
     <div id="header">
         <div id="title">Binary Decimal Converter</div>
     </div>
-    <div id="body">
-        <div id="instructions" class="lightText">Welcome to the Binary Decimal Converter!<br><br>Please enter the value to be converted. Select the input and output types. Then click the Calculate button to receive the output.</div>
-        <div id="inputs">
-            <div id="inputType" class="lightText">
-                <div id="inputTypeText">Input Type:</div>
-                <select id="inputTypeSelect" class="darkText">
-                    <option value="none" selected hidden>Not Selected</option>
-                    <option value="binaryUnsigned">Binary (Unsigned)</option>
-                    <option value="binarySigned">Binary (Signed)</option>
-                    <option value="binary1sComp">Binary (1's Complement)</option>
-                    <option value="binary2sComp">Binary (2's Complement)</option>
-                    <option value="decimal">Decimal</option>
-                    <option value="hex">Hex</option>
-                </select>
+    <div id="content">
+        <div id="body">
+            <div id="instructions" class="lightText">Welcome to the Binary Decimal Converter!<br><br>Please enter the value to be converted. Select the input and output types. Then click the Calculate button to receive the output.</div>
+            <div id="inputs">
+                <div id="inputType" class="lightText">
+                    <div id="inputTypeText">Input Type:</div>
+                    <select id="inputTypeSelect" class="darkText">
+                        <option value="none" selected hidden>Not Selected</option>
+                        <option value="binaryUnsigned">Binary (Unsigned)</option>
+                        <option value="binarySigned">Binary (Signed)</option>
+                        <option value="binary1sComp">Binary (1's Complement)</option>
+                        <option value="binary2sComp">Binary (2's Complement)</option>
+                        <option value="decimal">Decimal</option>
+                        <option value="hex">Hex</option>
+                    </select>
+                </div>
+                <div id="outputType" class="lightText">
+                    <div id="outputTypeText">Output Type:</div>
+                    <select id="outputTypeSelect" class="darkText">
+                        <option value="none" selected hidden>Not Selected</option>
+                        <option value="binaryUnsigned">Binary (Unsigned)</option>
+                        <option value="binarySigned">Binary (Signed)</option>
+                        <option value="binary1sComp">Binary (1's Complement)</option>
+                        <option value="binary2sComp">Binary (2's Complement)</option>
+                        <option value="decimal">Decimal</option>
+                        <option value="hex">Hex</option>
+                    </select>
+                </div>
+                <div id="inputValue" class="lightText">
+                    <div id="inputValueText">Input:</div>
+                    <input type="text" id="inputValueField" class="darkText"></input>
+                </div>
+                <div id="outputValue" class="lightText">
+                    <div id="outputValueText">Output:</div>
+                    <div id="outputValueField" class="lightText"></div>
+                </div>
+                <button id="calculateButton" class="darkText">Calculate</button>
             </div>
-            <div id="outputType" class="lightText">
-                <div id="outputTypeText">Output Type:</div>
-                <select id="outputTypeSelect" class="darkText">
-                    <option value="none" selected hidden>Not Selected</option>
-                    <option value="binaryUnsigned">Binary (Unsigned)</option>
-                    <option value="binarySigned">Binary (Signed)</option>
-                    <option value="binary1sComp">Binary (1's Complement)</option>
-                    <option value="binary2sComp">Binary (2's Complement)</option>
-                    <option value="decimal">Decimal</option>
-                    <option value="hex">Hex</option>
-                </select>
-            </div>
-            <div id="inputValue" class="lightText">
-                <div id="inputValueText">Input:</div>
-                <input type="text" id="inputValueField" class="darkText"></input>
-            </div>
-            <div id="outputValue" class="lightText">
-                <div id="outputValueText">Output:</div>
-                <div id="outputValueField" class="lightText"></div>
-            </div>
-            <button id="calculateButton" class="darkText">Calculate</button>
+            <div id="output" class="lightText"></div>
+            <div id="explanation" class="lightText"></div>
         </div>
-        <div id="output" class="lightText"></div>
-        <div id="explanation" class="lightText"></div>
     </div>
-
     <footer id="footer" class="darkText">Liam Morrison, <script >document.write(new Date().getFullYear());</script></footer>
 
     <script>
@@ -392,9 +399,7 @@
                 let output = convertDecimalToBinary2sComp(input);
                 return output;
             } else if (inputType == "decimal" && outputType == "hex") {
-                // Converts decimal to hex using binary 2's complement as a mediator.
-                let binary2sComp = convertDecimalToBinary2sComp(input);
-                let output = convertBinaryToHex(binary2sComp);
+                let output = convertDecimalToHex(input);
                 return output;
             } else if (inputType == "hex" && outputType == "binaryUnsigned") {
                 let output = convertHexToBinary(input);
@@ -409,9 +414,7 @@
                 let output = convertHexToBinary(input);
                 return output;
             } else if (inputType == "hex" && outputType == "decimal") {
-                // Converts hex to decimal using binary 2's complement as a mediator.
-                let binary2sComp = convertHexToBinary(input);
-                let output = convertBinary2sCompToDecimal(binary2sComp);
+                let output = convertHexToDecimal(input);
                 return output;
             }
         }
@@ -541,18 +544,18 @@
 
         function convertBinarySignedToBinary1sComp(binarySigned) {
             // Converts signed binary to unsigned binary to 2's complement binary.
-            explanation.innerHTML += "First convert the signed binary (" + binarySigned + ") to unsigned binary:<br>";
+            explanation.innerHTML += "Convert the signed binary (" + binarySigned + ") to unsigned binary:<br>";
             let binaryUnsigned = convertBinarySignedToBinaryUnsigned(binarySigned);
-            explanation.innerHTML += "<br><br>Then convert the unsigned binary (" + binaryUnsigned + ") to 1's complement binary:<br>";
+            explanation.innerHTML += "<br><br>Convert the unsigned binary (" + binaryUnsigned + ") to 1's complement binary:<br>";
             let output = convertBinaryUnsignedToBinary1sComp(binaryUnsigned);
             return output;
         }
 
         function convertBinarySignedToBinary2sComp(binarySigned) {
             // Converts signed binary to unsigned binary to 2's complement binary.
-            explanation.innerHTML += "First convert the signed binary (" + binarySigned + ") to unsigned binary:<br>";
+            explanation.innerHTML += "Convert the signed binary (" + binarySigned + ") to unsigned binary:<br>";
             let binaryUnsigned = convertBinarySignedToBinaryUnsigned(binarySigned);
-            explanation.innerHTML += "<br><br>Then convert the unsigned binary (" + binaryUnsigned + ") to 2's complement binary:<br>";
+            explanation.innerHTML += "<br><br>Convert the unsigned binary (" + binaryUnsigned + ") to 2's complement binary:<br>";
             let output = convertBinaryUnsignedToBinary2sComp(binaryUnsigned);
             return output;
         }
@@ -659,6 +662,8 @@
                 return output;
             } else {
                 let output = removeLeadingZeros(binary1sComp, true);
+                explanation.innerHTML += "Remove all leading 0s to make it unsigned.";
+                explanation.innerHTML += "<br>" + binary1sComp + " - leading 0s = " + output;
                 return output;
             }
         }
@@ -699,11 +704,9 @@
             let output;
 
             if (binary2sComp.substring(0, 1) == 0) {
-                // Converts the input into an array with each digit as its own item.
-                let outputArray = Array.from(String(binary2sComp), Number);
-                // Converts into an array and back so the function below can remove all redundant leading 0s.
-                let output = createBinaryOutputLeftToRight(outputArray);
-                output = removeLeadingZeros(output, false);
+                explanation.innerHTML += "Remove all leading 0s:<br>" + binary2sComp + " -> ";
+                output = removeLeadingZeros(binary2sComp, false);
+                explanation.innerHTML += output;
                 return output;
             } else {
                 // Converts the input into an array with each digit as its own item.
@@ -728,13 +731,19 @@
                 }
 
                 output = createBinaryOutputLeftToRight(outputArray);
+                explanation.innerHTML += "Read from right to left until you find the first 1. Then complement all digits left of that 1:<br>"
+                explanation.innerHTML += binary2sComp + " -> " + output;
+
+                explanation.innerHTML += "<br><br>Remove all leading 0s and add a negative sign:<br>" + output + " -> ";
                 output = removeLeadingZeros(output, false);
                 output = "-" + output;
+                explanation.innerHTML += output;
                 return output;
             }
         }
 
         function convertBinary2sCompToBinarySigned(binary2sComp) {
+            explanation.innerHTML += "First convert the 2's complement binary to unsigned binary:<br>";
             // Converts the 2's complement binary to unsigned binary
             let binarySigned = convertBinary2sCompToBinaryUnsigned(binary2sComp);
 
@@ -745,13 +754,14 @@
             } else {
                 output = "0" + binarySigned;
             }
+            explanation.innerHTML += "<br><br>Then either replace the negative sign with a 1 or add a leading 0: " + output;
 
-            output = removeLeadingZeros(output, true);
             return output;
         }
 
         function convertBinary2sCompToBinary1sComp(binary2sComp) {
             if (binary2sComp.substring(0, 1) == "1") {
+                explanation.innerHTML += "Add -1 (in 2's complement) to the 2's complement to make it 1's complement:<br>" + binary2sComp + " + <br>";
                 let addend1 = Array.from(String(binary2sComp), Number);
 
                 // Creates -1 in 2's complement binary to be added.
@@ -759,12 +769,16 @@
                 for (let i = 0; i < binary2sComp.length; i++) {
                     addend2 += "1";
                 }
+                explanation.innerHTML += addend2 + " = <br>"
                 addend2 = Array.from(String(addend2), Number);
 
                 let output = addBinary(addend1, addend2);
+                explanation.innerHTML += output;
                 return output;
             } else {
                 let output = removeLeadingZeros(binary2sComp, true);
+                explanation.innerHTML += "Remove all leading 0s to make it unsigned.";
+                explanation.innerHTML += "<br>" + binary2sComp + " - leading 0s = " + output;
                 return output;
             }
         }
@@ -778,20 +792,30 @@
                 // If the input is positive or 0, then the signed binary is returned.
                 decimalTotal = convertBinarySignedToDecimal(binary);
             } else {
+                explanation.innerHTML += "Add each corresponding binary digit's power of 2 to the total if it is 0 (digits are counted from right to left starting at index 0 until the last/sign digit):<br>"
                 // If the input is negative, then:
                 // 1) The 0 bits have their corresponding decimal values added to decimalTotal.
                 let j = 0;
                 for (let i = binaryArray.length - 1; i >= 0; i--) {
                     if (binaryArray[i] == 0) {
+                        explanation.innerHTML += "Total (" + decimalTotal + ") + Digit " + j + " (" + powers[j] + ") = ";
                         decimalTotal += powers[j];
+                        explanation.innerHTML += decimalTotal + "<br>";
                     }
 
                     j++;
                 }
+
                 // 2) The decimalTotal is incremented by 1.
+                explanation.innerHTML += "<br>Add 1 to the total:";
+                explanation.innerHTML += "<br>" + decimalTotal + " + 1 = ";
                 decimalTotal++;
+                explanation.innerHTML += decimalTotal;
+
                 // 3) The decimalTotal is made negative.
                 decimalTotal = -decimalTotal;
+                explanation.innerHTML += "<br><br>Since the 2's complement binary was negative, the decimal total is made negative:";
+                explanation.innerHTML += "<br>Total = " + decimalTotal;
             }
 
             return decimalTotal;
@@ -810,14 +834,25 @@
             } else {
                 remainder = decimal;
             }
-
+            explanation.innerHTML += "Use the absolute value of the decimal number (" + remainder + ") as a counter for the remaining value that needs to be accounted for in binary:";
+            
             // Loops through the powers of 2 by finding the highest power of 2 that it can add, filling the binary digit for those that can be added,
             // and subtracting that power of 2 from the remainder so that there is a record of how much still needs to be accounted for.
+            let foundFirstDigit = false;
             for (let i = powers.length - 1; i >= 0; i--) {
                 if (powers[i] <= remainder) {
+                    foundFirstDigit = true;
+                    explanation.innerHTML += "<br><br>2^" + i + " (" + powers[i] + ") <= remainder (" + remainder + "), so digit " + i + " is 1";
+                    explanation.innerHTML += "<br>2^" + i + " (" + powers[i] + ") is subtracted from the remainder (" + remainder + "):";
+                    explanation.innerHTML += "<br>" + remainder + " - " + powers[i] + " = ";
                     outputArray[i] = 1;
                     remainder -= powers[i];
+                    explanation.innerHTML += remainder;
                 } else {
+                    // Prevents explaining all of the 0s before the first 1.
+                    if (foundFirstDigit) {
+                        explanation.innerHTML += "<br><br>2^" + i + " (" + powers[i] + ") > remainder (" + remainder + "), so digit " + i + " is 0";
+                    }
                     outputArray[i] = 0;
                 }
             }
@@ -826,6 +861,8 @@
             output = removeLeadingZeros(output, false);
             // Adds the negative sign back to the output if the input was negative.
             if (isNegative) output = "-" + output;
+            explanation.innerHTML += "<br><br>Combine all of the digits and add a negative sign (if negative) to form an output:";
+            explanation.innerHTML += "<br>" + output;
             return output;
         }
 
@@ -842,6 +879,7 @@
             } else {
                 remainder = decimal;
             }
+            explanation.innerHTML += "Use the absolute value of the decimal number (" + remainder + ") as a counter for the remaining value that needs to be accounted for in binary:";
 
             // Loops through the powers of 2 by finding the highest power of 2 that it can add, filling the binary digit for those that can be added,
             // and subtracting that power of 2 from the remainder so that there is a record of how much still needs to be accounted for.
@@ -855,9 +893,17 @@
                         firstDigit = i;
                     }
 
+                    explanation.innerHTML += "<br><br>2^" + i + " (" + powers[i] + ") <= remainder (" + remainder + "), so digit " + i + " is 1";
+                    explanation.innerHTML += "<br>2^" + i + " (" + powers[i] + ") is subtracted from the remainder (" + remainder + "):";
+                    explanation.innerHTML += "<br>" + remainder + " - " + powers[i] + " = ";
                     outputArray[i] = 1;
                     remainder -= powers[i];
+                    explanation.innerHTML += remainder;
                 } else {
+                    // Prevents explaining all of the 0s before the first 1.
+                    if (foundFirstDigit) {
+                        explanation.innerHTML += "<br><br>2^" + i + " (" + powers[i] + ") > remainder (" + remainder + "), so digit " + i + " is 0";
+                    }
                     outputArray[i] = 0;
                 }
             }
@@ -871,20 +917,36 @@
 
             let output = createBinaryOutputRightToLeft(outputArray);
             output = removeLeadingZeros(output, true);
+
+            explanation.innerHTML += "<br><br>Combine all of the digits and add a sign digit to form an output:";
+            explanation.innerHTML += "<br>" + output;
             return output;
         }
 
         function convertDecimalToBinary1sComp(decimal) {
             // Converts decimal to unsigned binary to 1's complement binary.
+            explanation.innerHTML += "Convert the decimal the unsigned binary:<br>";
             let unsignedBinary = convertDecimalToBinaryUnsigned(decimal);
+            explanation.innerHTML += "<br><br>Convert the unsigned binary to 1's complement binary:<br>";
             let output = convertBinaryUnsignedToBinary1sComp(unsignedBinary);
             return output;
         }
 
         function convertDecimalToBinary2sComp(decimal) {
             // Converts decimal to unsigned binary to 2's complement binary.
+            explanation.innerHTML += "Convert the decimal the unsigned binary:<br>";
             let unsignedBinary = convertDecimalToBinaryUnsigned(decimal);
+            explanation.innerHTML += "<br><br>Convert the unsigned binary to 2's complement binary:<br>";
             let output = convertBinaryUnsignedToBinary2sComp(unsignedBinary);
+            return output;
+        }
+
+        function convertDecimalToHex(decimal) {
+            // Converts decimal to hex using binary 2's complement as a mediator.
+            explanation.innerHTML += "Convert the decimal to 2's complement binary:<br>";
+            let binary2sComp = convertDecimalToBinary2sComp(decimal);
+            explanation.innerHTML += "<br><br>Convert the 2's complement binary to hex:<br>";
+            let output = convertBinaryToHex(binary2sComp);
             return output;
         }
 
@@ -910,7 +972,7 @@
                 // Converts the fourBitDecimal into a single Hex character.
                 let fourBitDecimal = convertBinaryUnsignedToDecimal(Number(fourBitBinary));
 
-                explanation.innerHTML += "Convert the decimal value (" + fourBitDecimal + ") to its hexadecimal equivalent: "
+                explanation.innerHTML += "<br><br>Convert the decimal value (" + fourBitDecimal + ") to its hexadecimal equivalent: "
                 if (fourBitDecimal >= 10) {
                     switch (fourBitDecimal) {
                         case 10:
@@ -939,19 +1001,25 @@
 
                 explanation.innerHTML += "Add the hexadecimal digit  (" + fourBitDecimal + ") to the beginning of the output (" + hex + "): ";
                 hex = fourBitDecimal + hex;
-                explanation.innerHTML += hex + "<br><br>";
+                explanation.innerHTML += hex;
             }
 
             // Makes the answer negative if the input was negative.
             if (binary < 0) {
                 hex = "-" + hex;
+                explanation.innerHTML += "<br><br>Add a negative sign to the output if negative:";
+                explanation.innerHTML += "<br>" + hex;
+            } else {
+                explanation.innerHTML += "<br><br>Hex output:";
+                explanation.innerHTML += "<br>" + hex;
             }
+            
 
             return hex;
         }
 
         function convertHexToBinary(hex) {
-            explanation.innerHTML += "Reading from left to right, all hexadecimal digits are converted into binary and added to the end of the output:<br>"
+            explanation.innerHTML += "Reading from left to right, all hexadecimal digits are converted into binary and added to the end of the output:<br><br>"
 
             let binary = "";
             // Converts the input into an array with each digit as its own item.
@@ -1018,7 +1086,19 @@
                 explanation.innerHTML += binary + "<br><br>";
             }
 
+            explanation.innerHTML += "2's complement binary output:";
+            explanation.innerHTML += "<br>" + binary;
+
             return binary;
+        }
+
+        function convertHexToDecimal(hex) {
+            // Converts hex to decimal using binary 2's complement as a mediator.
+            explanation.innerHTML += "Convert the hex to 2's complement binary:<br>";
+            let binary2sComp = convertHexToBinary(hex);
+            explanation.innerHTML += "<br><br>Convert the 2's complement binary to decimal:<br>";
+            let output = convertBinary2sCompToDecimal(binary2sComp);
+            return output;
         }
 
         function addBinary(addend1, addend2) {
